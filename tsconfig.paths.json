@@ -1,0 +1,15 @@
+{
+    "compilerOptions": {
+        "baseUrl": "./src",
+        "paths": {
+            "@components/*": ["./components/*"],
+            "@assets/*": ["./assets/*"],
+            "@hooks/*": ["./hooks/*"],
+            "@types": ["./types/index.ts"],
+            "@theme/*": ["./theme/*"],
+            "@redux/*": ["./redux/*"],
+            "@routes": ["./routes/index.ts"],
+            "@store": ["./redux/store.ts"]
+        }
+    }
+}

@@ -1,0 +1,94 @@
+const fs = require('fs');
+const { Telegraf, Markup } = require('telegraf');
+
+const bot = new Telegraf('5931675161:AAG-hvfdSefZANYdfgnhaHoZ5xGv59uvvPs');
+/* bot.startPolling(); */
+
+const answersMap = new Map();
+
+// Start command handler
+bot.start((ctx) => {
+  ctx.reply("Здравствуйте, напишите ваше имя и фамилию в формате 'Имя Фамилия'");
+
+  const chatId = ctx.chat.id;
+ 
+  
+  answersMap.set(ctx.from.id, []);
+});
+
+// Middleware for checking session state
+bot.use((ctx, next) => {
+  const userId = ctx.from.id;
+  if (!answersMap.has(userId)) {
+    ctx.reply("Сессия завершена. Вы можете начать ее заново командой /start.");
+    return;
+  }
+  next();
+});
+
+// Answer to question 1 handler
+bot.on('text', (ctx) => {
+  const userId = ctx.from.id;
+  const answers = answersMap.get(userId);
+  answers.push(ctx.message.text);
+
+  if (answers.length === 1) {
+    const keyboard = [
+      [{ text: 'Телеграм' }],
+      [{ text: 'WhatsApp' }],
+      [{ text: 'Телефон' }]
+    ];
+    ctx.reply('Выберите способ связи', {
+      reply_markup: {
+        keyboard,
+        resize_keyboard: true,
+        one_time_keyboard: true
+      }
+    });
+
+  } else if (answers.length === 2) {
+    const connectOption = ctx.message.text;
+    let question;
+    if (connectOption === 'Телеграм') {
+      question = "напишите username аккаунта на который мы вам напишем username можно найти в самом верху пункта 'настройки'";
+
+    } else if (connectOption === 'WhatsApp') {
+      question = 'Введите номер телефона к которому привязан WhatsApp:';
+    } else if (connectOption === 'Телефон') {
+      question = 'Введите ваш номер телефона по которому мы можем с вами связаться:';
+    }
+    ctx.reply(question);
+  
+  } else if (answers.length === 3) {
+    ctx.reply('Оцените ваш уровень владения языком:', {
+      reply_markup: {
+        keyboard: [
+          ['А1 (самое начало)'],
+          ['А2 (чуть-чуть говорю)'],
+          ['Не знаю']
+        ],
+        resize_keyboard: true,
+        one_time_keyboard: true
+      }
+    });
+  } else if (answers.length === 4) {
+    ctx.reply('Спасибо, с вами скоро свяжутся');
+
+    const chatId = '-4022831864'; // Идентификатор чата лены
+    const userLink = `https://t.me/${ctx.from.username}`;
+
+    const userId = ctx.from.id;
+    const firstName = ctx.from.first_name;
+    const lastName = ctx.from.last_name;
+
+    /* const phoneNumber = ctx.message.contact.phone_number; */
+
+    const answersArray = Array.from(answersMap.values());
+    bot.telegram.sendMessage(chatId, `\nДанные: ${answersArray.join('\n')}\nКонтакт: ${userLink} id=${userId}name=${firstName} ${lastName}`);
+    
+    answersMap.delete(userId);
+    ctx.reply("Сессия завершена. Вы можете начать ее заново командой /start.");
+  }
+});
+
+bot.launch();

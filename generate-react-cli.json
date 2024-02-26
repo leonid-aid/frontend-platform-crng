@@ -1,0 +1,24 @@
+{
+    "usesTypeScript": true,
+    "usesCssModule": false,
+    "cssPreprocessor": "scss",
+    "testLibrary": "Testing Library",
+    "component": {
+        "default": {
+            "customTemplates": {
+                "component": "templates/component/RT-TemplateName.tsx",
+                "hook": "templates/component/useTemplateName.ts",
+                "presets": "templates/component/RT-TemplateName.presets.ts",
+                "props": "templates/component/RT-TemplateName.props.ts"
+            },
+            "path": "src/components",
+            "withLazy": false,
+            "withStory": false,
+            "withStyle": false,
+            "withTest": false,
+            "withHook": true,
+            "withPresets": true,
+            "withProps": true
+        }
+    }
+}
